@@ -1,138 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BASTIEN</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
-<style>
-*{ margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
-
-body{
-    width:100%; height:100vh; overflow:hidden;
-    display:flex; justify-content:center; align-items:center; position:relative;
-    background:url('https://img2.pic.in.th/FiveM_GTAProcess_2026-01-30_00-03-24_617.png');
-    background-size:cover; background-position:center;
-}
-
-body::before{
-    content:''; position:absolute; inset:0;
-    background:rgba(0,0,0,.78); backdrop-filter:blur(2px);
-}
-
-.container{ position:relative; z-index:5; text-align:center; width:100%; }
-
-.title{
-    color:#fff; font-size:7rem; font-weight:900; letter-spacing:15px;
-    text-shadow: 0 0 15px rgba(255,255,255,.4), 0 0 35px rgba(255,255,255,.15);
-    animation:fadeUp 1s ease;
-}
-
-.subtitle{ color:#bdbdbd; letter-spacing:8px; margin-top:12px; font-size:14px; animation:fadeUp 1.2s ease; }
-.line{ width:250px; height:1px; background:rgba(255,255,255,.2); margin:18px auto 35px; }
-
-.logo{
-    width:370px; max-width:80%;
-    filter: drop-shadow(0 0 25px rgba(255,255,255,.35));
-    animation:float 5s ease-in-out infinite;
-}
-
-.cards{ margin-top:40px; display:flex; justify-content:center; gap:30px; flex-wrap:wrap; }
-
-/* ปรับแต่งส่วน Card ให้เป็นปุ่มกดได้ */
-.card{
-    width:260px; height:120px;
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.08);
-    backdrop-filter:blur(15px);
-    border-radius:22px;
-    display:flex; flex-direction:column; justify-content:center; align-items:center;
-    transition:.35s;
-    text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
-    cursor: pointer;       /* เปลี่ยนเมาส์เป็นรูปมือ */
-}
-
-.card:hover{
-    transform:translateY(-6px);
-    background:rgba(255,255,255,.08);
-    box-shadow:0 0 30px rgba(255,255,255,.08);
-}
-
-.card h2{ color:white; font-size:30px; letter-spacing:3px; }
-.card span{ color:#9f9f9f; margin-top:8px; letter-spacing:3px; font-size:12px; }
-
-.socials{ position:absolute; bottom:25px; left:25px; z-index:10; display:flex; gap:12px; }
-.socials a{
-    width:48px; height:48px; background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.08); border-radius:14px;
-    color:white; text-decoration:none;
-    display:flex; justify-content:center; align-items:center; transition:.3s;
-}
-.socials a:hover{ background:white; color:black; }
-
-.credit{ position:absolute; bottom:20px; left:50%; transform:translateX(-50%); z-index:10; color:rgba(255,255,255,.35); font-size:12px; letter-spacing:3px; }
-.stars{ position:absolute; inset:0; z-index:2; }
-.star{ position:absolute; color:white; opacity:.7; animation:sparkle linear infinite; }
-
-@keyframes sparkle{ 0%{ transform:translateY(0px) rotate(0deg); opacity:0; } 50%{ opacity:1; } 100%{ transform:translateY(-120px) rotate(180deg); opacity:0; } }
-@keyframes float{ 0%{ transform:translateY(0); } 50%{ transform:translateY(-12px); } 100%{ transform:translateY(0); } }
-@keyframes fadeUp{ from{ opacity:0; transform:translateY(30px); } to{ opacity:1; transform:translateY(0); } }
-
-@media(max-width:768px){ .title{ font-size:4rem; } .logo{ width:260px; } }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BASTIENSTYLE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *{ margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
+        body{ background:#050505; color:white; min-height:100vh; overflow-x:hidden; }
+        body::before{ content:''; position:fixed; inset:0; background: radial-gradient(circle at top,#3f0069 0%,transparent 40%), radial-gradient(circle at bottom,#000000 0%,#050505 60%); z-index:-1; }
+        .container{ width:90%; max-width:1400px; margin:auto; padding:40px 0; }
+        .header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:40px; }
+        .logo h1{ font-size:60px; font-weight:900; letter-spacing:2px; }
+        .search-box{ width:320px; }
+        .search-box input{ width:100%; padding:15px; background:#111; border:1px solid #222; color:white; border-radius:12px; outline:none; }
+        .section-title{ margin-top:40px; margin-bottom:20px; font-size:14px; font-weight:800; letter-spacing:5px; }
+        .leader-title{ color:#ff3b3b; }
+        .member-title{ color:#8f6bff; }
+        .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:20px; }
+        .card{ background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.06); backdrop-filter:blur(10px); border-radius:18px; padding:18px; display:flex; align-items:center; justify-content:space-between; transition:.3s; }
+        .card:hover{ transform:translateY(-5px); border-color:#8f6bff; }
+        .left{ display:flex; align-items:center; gap:15px; }
+        .avatar{ width:65px; height:65px; border-radius:50%; object-fit:cover; border:2px solid #8f6bff; }
+        .info h3{ font-size:17px; }
+        .rank{ font-size:12px; opacity:.7; margin-top:4px; }
+        .actions{ display:flex; gap:10px; }
+        .actions a{ width:40px; height:40px; display:flex; align-items:center; justify-content:center; background:#111; border-radius:50%; text-decoration:none; color:white; cursor:pointer; }
+        .admin-btn{ position:fixed; bottom:30px; right:30px; width:65px; height:65px; border:none; border-radius:50%; background:#8f6bff; color:white; font-size:22px; cursor:pointer; }
+        .modal{ position:fixed; inset:0; background:rgba(0,0,0,.8); display:none; align-items:center; justify-content:center; z-index:999; }
+        .modal-content{ width:95%; max-width:600px; background:#0d0d0d; border:1px solid #222; border-radius:20px; padding:30px; }
+        .modal-content h2{ margin-bottom:20px; }
+        .modal-content input, .modal-content select{ width:100%; padding:14px; margin-bottom:15px; background:#111; border:1px solid #222; color:white; border-radius:10px; }
+        .saveBtn{ width:100%; padding:15px; background:#8f6bff; border:none; color:white; font-weight:700; cursor:pointer; border-radius:10px; }
+    </style>
 </head>
 <body>
 
-<div class="stars" id="stars"></div>
-
 <div class="container">
-    <h1 class="title">BASTIEN</h1>
-    <div class="subtitle">BET FEARLESS IS KING</div>
-    <div class="line"></div>
-    <img class="logo" src="https://img2.pic.in.th/494689434_680826811541356_487741571349200127_ndd7be3f6748aa3d5.png" alt="logo">
+    <div class="header">
+        <div class="logo">
+            <h1>BASTIENSTYLE</h1>
+            <div id="memberCount">0 MEMBERS</div>
+        </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search Member...">
+        </div>
+    </div>
+    <div class="section-title leader-title">LEADER</div>
+    <div class="grid" id="leaderContainer"></div>
+    <div class="section-title member-title">MEMBER</div>
+    <div class="grid" id="memberContainer"></div>
+</div>
 
-    <div class="cards">
-        <a href="ใส่ลิงก์ของคุณที่นี่" class="card" target="_blank">
-            <h2>BASTIEN</h2>
-            <span>MEMBER</span>
-        </a>
+<button class="admin-btn" onclick="openAdmin()">⚙</button>
 
-        <a href="ใส่ลิงก์ของคุณที่นี่" class="card" target="_blank">
-            <h2>EVELYN</h2>
-            <span>MEMBER</span>
-        </a>
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+        <h2>ADMIN LOGIN</h2>
+        <input type="text" id="adminUser" placeholder="Username">
+        <input type="password" id="adminPass" placeholder="Password">
+        <button class="saveBtn" onclick="loginAdmin()">LOGIN</button>
     </div>
 </div>
 
-<div class="socials">
-    <a href="https://www.youtube.com/@bastienboys" target="_blank"><i class="fab fa-youtube"></i></a>
-    <a href="https://discord.gg/krywZwMTVP" target="_blank"><i class="fab fa-discord"></i></a>
+<div class="modal" id="adminModal">
+    <div class="modal-content">
+        <h2>ADMIN PANEL</h2>
+        <input type="text" id="memberName" placeholder="Member Name">
+        <select id="memberRank">
+            <option value="LEADER">LEADER</option>
+            <option value="MEMBER">MEMBER</option>
+        </select>
+        <input type="text" id="memberFacebook" placeholder="Facebook Link">
+        <button class="saveBtn" onclick="saveMember()">SAVE MEMBER</button>
+    </div>
 </div>
 
-<div class="credit">ORIGINAL BY BASTIEN & EVELYN © 2026</div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, push, set, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-<script>
-const stars = document.getElementById("stars");
-for(let i=0;i<80;i++){
-    const star = document.createElement("div");
-    star.classList.add("star");
-    star.innerHTML = Math.random() > 0.5 ? "✦" : "✧";
-    star.style.left = Math.random()*100+"%";
-    star.style.top = Math.random()*100+"%";
-    star.style.fontSize = (Math.random()*18+8)+"px";
-    star.style.animationDuration = (Math.random()*6+4)+"s";
-    star.style.animationDelay = Math.random()*5+"s";
-    stars.appendChild(star);
-}
-document.addEventListener("mousemove",(e)=>{
-    const x = (window.innerWidth/2 - e.pageX)/80;
-    const y = (window.innerHeight/2 - e.pageY)/80;
-    document.body.style.backgroundPosition = `${50+x}% ${50+y}%`;
-});
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        databaseURL: "https://bastienstyle-3d598-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "bastienstyle-3d598",
+        storageBucket: "bastienstyle-3d598.appspot.com",
+        messagingSenderId: "YOUR_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const DEFAULT_AVATAR = "https://img2.pic.in.th/108517da8a8289df682.png";
+    const ADMIN_USER = "admin";
+    const ADMIN_PASS = "1975";
+    let isAdmin = false;
+    let editId = null;
+
+    window.openAdmin = () => {
+        if(!isAdmin) document.getElementById("loginModal").style.display = "flex";
+        else document.getElementById("adminModal").style.display = "flex";
+    };
+
+    window.loginAdmin = () => {
+        if(document.getElementById("adminUser").value === ADMIN_USER && document.getElementById("adminPass").value === ADMIN_PASS){
+            isAdmin = true;
+            document.getElementById("loginModal").style.display = "none";
+            document.getElementById("adminModal").style.display = "flex";
+        } else { alert("INVALID"); }
+    };
+
+    window.onclick = (e) => {
+        if(e.target.className === 'modal') e.target.style.display = "none";
+    };
+
+    const createCard = (id, data) => `
+        <div class="card">
+            <div class="left">
+                <img class="avatar" src="${data.avatar || DEFAULT_AVATAR}">
+                <div class="info"><h3>${data.name}</h3><div class="rank">${data.rank}</div></div>
+            </div>
+            <div class="actions">
+                <a href="${data.facebook}" target="_blank">f</a>
+                <a onclick="editMember('${id}')">✏</a>
+                <a onclick="deleteMember('${id}')">🗑</a>
+            </div>
+        </div>`;
+
+    onValue(ref(db, "members"), (snapshot) => {
+        const leaderContainer = document.getElementById("leaderContainer");
+        const memberContainer = document.getElementById("memberContainer");
+        leaderContainer.innerHTML = "";
+        memberContainer.innerHTML = "";
+        let total = 0;
+        snapshot.forEach((child) => {
+            total++;
+            const data = child.val();
+            if(data.rank === "LEADER") leaderContainer.innerHTML += createCard(child.key, data);
+            else memberContainer.innerHTML += createCard(child.key, data);
+        });
+        document.getElementById("memberCount").innerHTML = `${total} MEMBERS`;
+    });
+
+    window.saveMember = async () => {
+        const data = { name: document.getElementById("memberName").value, rank: document.getElementById("memberRank").value, facebook: document.getElementById("memberFacebook").value, avatar: DEFAULT_AVATAR };
+        if(editId) await update(ref(db, "members/" + editId), data);
+        else await push(ref(db, "members"), data);
+        document.getElementById("adminModal").style.display = "none";
+        editId = null;
+    };
+
+    window.deleteMember = async (id) => { if(confirm("Delete?")) await remove(ref(db, "members/" + id)); };
+    window.editMember = (id) => {
+        onValue(ref(db, "members/" + id), (snapshot) => {
+            const data = snapshot.val();
+            editId = id;
+            document.getElementById("memberName").value = data.name;
+            document.getElementById("memberRank").value = data.rank;
+            document.getElementById("memberFacebook").value = data.facebook;
+            document.getElementById("adminModal").style.display = "flex";
+        }, { onlyOnce: true });
+    };
 </script>
 </body>
 </html>
