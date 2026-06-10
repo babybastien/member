@@ -1,604 +1,384 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="pageTitle">BASTIEN</title>
-    <link id="favicon" rel="icon" href="" type="image/x-icon">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://www.youtube.com/iframe_api"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        :root {
-            --accent: #ffc107;
-            --bg: #0d0e12;
-            --card-bg: rgba(18, 19, 23, 0.75);
-            --admin-card: #16181d;
-            --input-bg: #0f1013;
-            --border: rgba(255, 255, 255, 0.06);
-            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --danger: #ff4757;
-            --success: #2ed573;
-        }
+<title>BASTIEN MEMBER LIST</title>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { 
-            background-color: var(--bg); 
-            background-size: cover; 
-            background-position: center; 
-            background-attachment: fixed; 
-            color: #f5f6fa; 
-            font-family: 'Inter', sans-serif; 
-            overflow-x: hidden; 
-            line-height: 1.6; 
-            transition: background 0.5s ease; 
-            opacity: 0; 
-            animation: fadeInPage 1.2s ease forwards; 
-        }
-        @keyframes fadeInPage { from { opacity: 0; } to { opacity: 1; } }
-        
-        #weather-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); filter: blur(5px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
-        
-        .top-nav { 
-            position: fixed; 
-            top: 0; 
-            width: 100%; 
-            padding: 20px 5%; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            z-index: 1000; 
-            background: rgba(13, 14, 18, 0.6); 
-            backdrop-filter: blur(30px); 
-            -webkit-backdrop-filter: blur(30px);
-            border-bottom: 1px solid var(--border); 
-        }
-        .config-btn { 
-            background: var(--accent); 
-            color: #000; 
-            border: none; 
-            padding: 10px 24px; 
-            border-radius: 30px; 
-            font-family: 'Orbitron'; 
-            cursor: pointer; 
-            transition: var(--transition); 
-            font-size: 11px; 
-            font-weight: 700; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .config-btn:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 0 25px rgba(255, 193, 7, 0.5); 
-        }
-        
-        .hero { padding: 160px 20px 40px; text-align: center; animation: slideIn 1s cubic-bezier(0.22, 1, 0.36, 1); }
-        #siteLogo { max-width: 130px; margin-bottom: 20px; filter: drop-shadow(0 0 30px rgba(255,193,7,0.3)); transition: var(--transition); }
-        #siteLogo:hover { transform: scale(1.05); }
-        .hero h1 { font-family: 'Orbitron'; font-size: clamp(32px, 5vw, 56px); letter-spacing: 12px; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; text-shadow: 0 0 20px rgba(255,193,7,0.2); }
-        
-        .category-section { max-width: 1400px; margin: 40px auto; padding: 0 5%; }
-        .category-header { 
-            font-family: 'Orbitron'; 
-            font-size: 13px; 
-            letter-spacing: 5px; 
-            color: var(--accent); 
-            margin-bottom: 30px; 
-            padding-left: 15px; 
-            text-transform: uppercase; 
-            position: relative;
-        }
-        .category-header::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 16px;
-            background: var(--accent);
-            border-radius: 2px;
-            box-shadow: 0 0 10px var(--accent);
-        }
-        
-        .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; padding-bottom: 40px; z-index: 100; position: relative; }
-        .member-card { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            border-radius: 20px; 
-            padding: 24px; 
-            display: flex; 
-            align-items: center; 
-            gap: 20px; 
-            transition: var(--transition); 
-            backdrop-filter: blur(15px); 
-            -webkit-backdrop-filter: blur(15px);
-            animation: slideIn 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) backwards; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-        .member-card:hover { 
-            border-color: rgba(255,255,255,0.15); 
-            transform: translateY(-6px) scale(1.02); 
-            background: rgba(26, 27, 33, 0.85); 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.02);
-        }
-        
-        .avatar { width: 75px; height: 75px; border-radius: 16px; object-fit: cover; border: 2px solid rgba(255,255,255,0.08); transition: var(--transition); }
-        .member-card:hover .avatar { transform: rotate(3deg) scale(1.05); border-color: var(--accent); }
-        .rank-tag { font-family: 'Orbitron'; font-size: 9px; font-weight: 700; padding: 5px 14px; border-radius: 30px; color: #000; letter-spacing: 1.5px; margin-top: 8px; display: inline-block; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        
-        .social-links { margin-left: auto; display: flex; gap: 14px; font-size: 18px; }
-        .social-links a { color: #8a8f9d; transition: var(--transition); opacity: 0.7; }
-        .social-links a:hover { transform: translateY(-3px) scale(1.2); opacity: 1; }
-        
-        .site-footer { padding: 60px 20px; text-align: center; font-family: 'Orbitron'; font-size: 10px; letter-spacing: 3px; opacity: 0.6; border-top: 1px solid var(--border); margin-top: 40px; }
-        .site-footer a { color: var(--accent); text-decoration: none; font-weight: 700; transition: var(--transition); }
-        .site-footer a:hover { text-shadow: 0 0 10px var(--accent); }
-        
-        /* Admin UI */
-        .admin-panel { display: none; position: fixed; inset: 0; background: #090a0c; z-index: 9999; overflow-y: auto; padding: 50px 20px; }
-        .admin-container { max-width: 1200px; margin: 0 auto; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; padding-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .admin-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 30px; }
-        .admin-card { background: var(--admin-card); padding: 32px; border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 15px 40px rgba(0,0,0,0.4); }
-        
-        .col-4 { grid-column: span 4; }
-        .col-8 { grid-column: span 8; }
-        .col-12 { grid-column: span 12; }
-        
-        label { display: block; font-family: 'Orbitron'; font-size: 10px; color: var(--accent); margin-bottom: 10px; letter-spacing: 1.5px; font-weight: 700; }
-        input, select { width: 100%; padding: 16px; background: var(--input-bg); border: 1px solid rgba(255,255,255,0.05); color: #fff; border-radius: 12px; margin-bottom: 24px; font-size: 14px; transition: var(--transition); font-family: 'Inter', sans-serif; }
-        input:focus, select:focus { border-color: var(--accent); outline: none; background: rgba(255,255,255,0.02); box-shadow: 0 0 15px rgba(255, 193, 7, 0.1); }
-        
-        .btn-save { width: 100%; padding: 16px; border: none; border-radius: 12px; cursor: pointer; font-family: 'Orbitron'; font-weight: 700; transition: var(--transition); background: var(--accent); color: #000; letter-spacing: 1px; text-transform: uppercase; font-size: 12px; }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 193, 7, 0.3); }
-        
-        .admin-item-row { background: rgba(255,255,255,0.02); padding: 18px 24px; border-radius: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); transition: var(--transition); }
-        .admin-item-row:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
-        .delete-btn { color: var(--danger); cursor: pointer; padding: 8px; transition: var(--transition); opacity: 0.8; }
-        .delete-btn:hover { transform: scale(1.15); opacity: 1; }
-        
-        /* Notification */
-        #notification-container { position: fixed; bottom: 30px; left: 30px; z-index: 10000; }
-        .notify { background: #16181d; color: #fff; border-left: 4px solid var(--accent); border-radius: 8px; padding: 16px 28px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 14px; margin-top: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; }
-        
-        /* Music Control Button */
-        .music-ctrl { position: fixed; bottom: 30px; right: 30px; z-index: 1000; width: 55px; height: 55px; background: var(--accent); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 25px rgba(0,0,0,0.4); transition: var(--transition); font-size: 16px; }
-        .music-ctrl:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 0 30px var(--accent); }
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; margin-bottom: 15px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #272930; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(24px); }
+<style>
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: #272930; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #32353f; }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Montserrat',sans-serif;
+}
 
-        @media (max-width: 992px) { .col-4, .col-8 { grid-column: span 12; } .top-nav { padding: 15px 20px; } }
-    </style>
+body{
+background:
+radial-gradient(circle at top,#5b21b6 0%,#0a0a0a 35%,#000 100%);
+color:white;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+.container{
+width:90%;
+max-width:1400px;
+margin:auto;
+padding:50px 0;
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:20px;
+margin-bottom:50px;
+}
+
+.logo h1{
+font-size:70px;
+font-weight:900;
+letter-spacing:4px;
+background:linear-gradient(90deg,#ffffff,#a855f7);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.total-member{
+margin-top:10px;
+font-size:18px;
+letter-spacing:2px;
+color:#cfcfcf;
+}
+
+.total-member span{
+font-size:42px;
+font-weight:900;
+color:#fff;
+}
+
+.search-box{
+position:relative;
+}
+
+.search-box input{
+width:320px;
+padding:15px 20px;
+background:rgba(255,255,255,.05);
+border:1px solid rgba(255,255,255,.1);
+border-radius:14px;
+color:white;
+outline:none;
+font-size:15px;
+backdrop-filter:blur(10px);
+}
+
+.search-box input:focus{
+border-color:#a855f7;
+box-shadow:0 0 20px rgba(168,85,247,.4);
+}
+
+.section{
+margin-bottom:60px;
+}
+
+.section-title{
+display:flex;
+align-items:center;
+gap:15px;
+margin-bottom:25px;
+font-size:22px;
+font-weight:800;
+letter-spacing:4px;
+}
+
+.section-title::after{
+content:'';
+flex:1;
+height:2px;
+background:linear-gradient(90deg,currentColor,transparent);
+}
+
+.leader{
+color:#f59e0b;
+}
+
+.member{
+color:#22c55e;
+}
+
+.member-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:20px;
+}
+
+.card{
+background:rgba(255,255,255,.04);
+border:1px solid rgba(255,255,255,.08);
+border-radius:20px;
+padding:20px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+backdrop-filter:blur(12px);
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+border-color:#a855f7;
+box-shadow:0 0 30px rgba(168,85,247,.25);
+}
+
+.left{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.avatar{
+width:65px;
+height:65px;
+border-radius:50%;
+background:linear-gradient(135deg,#a855f7,#7c3aed);
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:24px;
+font-weight:800;
+}
+
+.info h3{
+font-size:18px;
+margin-bottom:5px;
+}
+
+.role{
+font-size:12px;
+letter-spacing:2px;
+color:#aaa;
+}
+
+.fb-btn{
+width:48px;
+height:48px;
+border-radius:50%;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#1877f2;
+color:white;
+text-decoration:none;
+font-size:20px;
+transition:.3s;
+}
+
+.fb-btn:hover{
+transform:scale(1.1);
+}
+
+.footer{
+text-align:center;
+padding:50px 0;
+color:#777;
+font-size:13px;
+letter-spacing:2px;
+}
+
+.no-result{
+text-align:center;
+padding:50px;
+font-size:20px;
+display:none;
+}
+
+@media(max-width:768px){
+
+.logo h1{
+font-size:42px;
+}
+
+.search-box input{
+width:100%;
+}
+
+.header{
+align-items:flex-start;
+}
+
+}
+
+</style>
 </head>
 <body>
 
-    <canvas id="weather-canvas"></canvas>
-    <div id="notification-container"></div>
-    
-    <div class="music-ctrl" onclick="toggleMusic()">
-        <i id="musicIcon" class="fa-solid fa-play"></i>
-    </div>
+<div class="container">
 
-    <div id="yt-player-container" style="display:none;"><div id="player"></div></div>
+<div class="header">
 
-    <div id="loginModal" style="display:none; position:fixed; inset:0; background:rgba(5,5,8,0.85); z-index:10000; align-items:center; justify-content:center; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);">
-        <div class="admin-card" style="width:100%; max-width:420px; border-color: rgba(255,255,255,0.05);">
-            <h2 style="font-family:'Orbitron'; text-align:center; color:var(--accent); margin-bottom:35px; letter-spacing:4px; font-size:22px;">ADMIN LOGIN</h2>
-            <label>USERNAME</label><input type="text" id="loginUser" placeholder="Enter username...">
-            <label>PASSWORD</label><input type="password" id="loginPass" placeholder="Enter password...">
-            <button class="btn-save" onclick="attemptLogin()">ENTER COMMAND</button>
-            <button style="width:100%; background:none; border:none; color:#525866; margin-top:20px; cursor:pointer; font-family:'Orbitron'; font-size:11px; letter-spacing:1px; font-weight:700; transition:var(--transition);" onclick="closeModal('loginModal')" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#525866'">CANCEL</button>
-        </div>
-    </div>
+<div class="logo">
+<h1>BASTIEN</h1>
+<div class="total-member">
+<span id="totalMembers">0</span> MEMBERS
+</div>
+</div>
 
-    <nav class="top-nav">
-        <div style="font-family:'Orbitron'; font-size:11px; letter-spacing:2px; font-weight:700; display:flex; align-items:center; gap:8px;">
-            <i class="fa-solid fa-users" style="color:var(--accent); font-size:14px;"></i> MEMBER: <span id="countNum" style="color:var(--accent)">0</span>
-        </div>
-        <button class="config-btn" onclick="openModal('loginModal')"><i class="fa-solid fa-lock" style="margin-right:6px;"></i> ADMIN</button>
-    </nav>
+<div class="search-box">
+<input
+type="text"
+id="searchInput"
+placeholder="Search member..."
+>
+</div>
 
-    <header class="hero">
-        <img src="" id="siteLogo">
-        <h1 id="siteNameDisplay">LOADING...</h1>
-        <p id="siteDescDisplay" style="font-family:'Orbitron'; font-size:11px; opacity:0.5; letter-spacing:8px; margin-top:5px;">BET FEARLESS IS KING</p>
-    </header>
+</div>
 
-    <div style="max-width:650px; margin:0 auto 50px; padding:0 20px;">
-        <div style="position:relative;">
-            <i class="fa-solid fa-magnifying-glass" style="position:absolute; left:22px; top:50%; transform:translateY(-50%); color:#525866; font-size:14px;"></i>
-            <input type="text" id="memberSearch" placeholder="SEARCH DIRECTORY..." oninput="filterMembers()" style="border-radius:50px; padding: 16px 16px 16px 54px; background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.04); margin-bottom:0;">
-        </div>
-        <div id="categoryTabs" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:25px;"></div>
-    </div>
+<!-- LEADER -->
 
-    <div id="memberSections"></div>
+<div class="section">
 
-    <footer class="site-footer">
-        <span id="footerTextDisplay">ORIGINAL BY BASTIEN 1975</span> | Support by 
-        <a id="footerLinkLabel" href="https://www.youtube.com/@bastienboys" target="_blank">BASTIEN</a>
-    </footer>
+<div class="section-title leader">
+LEADER
+</div>
 
-    <div id="adminPanel" class="admin-panel">
-        <div class="admin-container">
-            <header class="admin-header">
-                <div>
-                    <h2 style="font-family:'Orbitron'; color:var(--accent); font-size:26px; letter-spacing:2px;">CENTRAL COMMAND</h2>
-                    <p style="font-size:12px; color:#525866; margin-top:4px;">Real-time Database & Site Management</p>
-                </div>
-                <button class="config-btn" style="background:var(--danger); color:#fff; box-shadow:0 4px 15px rgba(255,71,87,0.3);" onclick="closeAdminPanel()">CLOSE</button>
-            </header>
+<div class="member-grid">
 
-            <div class="admin-grid">
-                <div class="admin-card col-4">
-                    <div style="margin-bottom:25px; font-family:'Orbitron'; font-size:13px; color:var(--accent); border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px; letter-spacing:1px; font-weight:700;">SETTING - WEBSITE</div>
-                    <label>SITE NAME</label><input type="text" id="configSiteName">
-                    <label>FAVICON URL</label><input type="text" id="configFavicon">
-                    <label>THEME ACCENT</label><input type="color" id="configThemeColor" style="height:55px; cursor:pointer; padding:5px; background:#111;">
-                    <label>LOGO URL</label><input type="text" id="configLogoUrl">
-                    <label>WALLPAPER URL</label><input type="text" id="configBgUrl">
-                    <label>ATMOSPHERE EFFECT</label>
-                    <select id="configWeather">
-                        <option value="none">CLEAR</option>
-                        <option value="snow">SNOWFLAKES</option>
-                        <option value="rain">RAIN SHOWER</option>
-                    </select>
-                    <label>FOOTER TEXT</label><input type="text" id="configFooterText">
-                    <label>FOOTER LINK</label><input type="text" id="configFooterLink">
-                    <button class="btn-save" onclick="saveConfig()">SYNC DATABASE</button>
-                </div>
+<div class="card member-card">
+<div class="left">
+<div class="avatar">B</div>
+<div class="info">
+<h3>Bastien</h3>
+<div class="role">LEADER</div>
+</div>
+</div>
+<a class="fb-btn" href="https://facebook.com" target="_blank">f</a>
+</div>
 
-                <div class="col-8" style="display:flex; flex-direction:column; gap:30px;">
-                    <div class="admin-card">
-                        <div style="margin-bottom:20px; font-family:'Orbitron'; font-size:13px; color:var(--accent); font-weight:700; letter-spacing:1px;">ROLE GROUPS</div>
-                        <div style="display:flex; gap:15px;">
-                            <input type="text" id="newGroupName" placeholder="NEW GROUP (e.g. HIGH COMMAND)" style="margin-bottom:0;">
-                            <button class="config-btn" style="border-radius:12px;" onclick="addGroup()">ADD</button>
-                        </div>
-                        <div id="groupListContainer" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
-                    </div>
+<div class="card member-card">
+<div class="left">
+<div class="avatar">A</div>
+<div class="info">
+<h3>Aspas</h3>
+<div class="role">LEADER</div>
+</div>
+</div>
+<a class="fb-btn" href="https://facebook.com" target="_blank">f</a>
+</div>
 
-                    <div class="admin-card">
-                        <div style="margin-bottom:20px; font-family:'Orbitron'; font-size:13px; color:var(--accent); font-weight:700; letter-spacing:1px;">RANK & ROLES</div>
-                        <div style="display:grid; grid-template-columns: 2fr 1fr 1fr auto; gap:12px;">
-                            <input type="text" id="newRoleName" placeholder="ROLE NAME" style="margin-bottom:0;">
-                            <select id="roleGroupSelect" style="margin-bottom:0;"></select>
-                            <input type="color" id="newRoleColor" value="#ffc107" style="height:50px; margin-bottom:0; padding:4px; background:#111; cursor:pointer; border-radius:12px;">
-                            <button class="config-btn" style="border-radius:12px;" onclick="addRole()">ADD</button>
-                        </div>
-                        <div id="roleListContainer" style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:12px;"></div>
-                    </div>
+</div>
 
-                    <div class="admin-card">
-                        <div style="margin-bottom:20px; font-family:'Orbitron'; font-size:13px; color:var(--accent); font-weight:700; letter-spacing:1px;">AUDIO MUSIC</div>
-                        <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px;">
-                            <label class="switch"><input type="checkbox" id="musicAutoToggle"><span class="slider"></span></label>
-                            <span style="font-size:11px; font-family:'Orbitron'; letter-spacing:1px; font-weight:700; color:#8a8f9d;">AUTO-START ON LOAD</span>
-                        </div>
-                        <div style="display:grid; grid-template-columns: 2fr 1fr auto; gap:15px;">
-                            <input type="text" id="musicVidId" placeholder="YOUTUBE VIDEO ID" style="margin-bottom:0;">
-                            <input type="number" id="musicStart" placeholder="START (SEC)" style="margin-bottom:0;">
-                            <button class="btn-save" onclick="saveMusic()">UPDATE AUDIO</button>
-                        </div>
-                    </div>
-                </div>
+</div>
 
-                <div class="admin-card col-12">
-                    <div style="margin-bottom:25px; font-family:'Orbitron'; font-size:13px; color:var(--accent); border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px; font-weight:700; letter-spacing:1px;">ADMIN SETTING - ต้องเลือก Role และใส่ Link Facebook</div>
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:20px;">
-                        <div><label>FULL NAME</label><input type="text" id="memName"></div>
-                        <div><label>AVATAR URL</label><input type="text" id="memImg"></div>
-                        <div><label>ASSIGN ROLE</label><select id="memRole"></select></div>
-                        <div><label><i class="fa-brands fa-facebook"></i> FB URL (REQUIRED)</label><input type="text" id="memFb"></div>
-                        <div><label><i class="fa-brands fa-youtube"></i> YT URL</label><input type="text" id="memYt"></div>
-                        <div><label><i class="fa-brands fa-tiktok"></i> TK URL</label><input type="text" id="memTk"></div>
-                    </div>
-                    <input type="hidden" id="editMemId">
-                    <div style="display:flex; gap:15px; margin-top:15px;">
-                        <button id="memBtn" class="btn-save" style="flex:3;" onclick="saveMember()">DEPLOY TO DIRECTORY</button>
-                        <button class="btn-save" style="flex:1; background:#22242c; color:#fff;" onclick="clearMemForm()">CLEAR FORM</button>
-                    </div>
-                    <div id="adminMemberList" style="margin-top:35px; display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:15px;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
+<!-- MEMBER -->
 
-    <script>
-        // Updated Firebase Config
-        const firebaseConfig = { 
-            databaseURL: "https://bastienstyle-3d598-default-rtdb.asia-southeast1.firebasedatabase.app/" 
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+<div class="section">
 
-        let player, currentRoles = {}, currentMembers = {}, currentGroups = {}, activeTab = 'all', weatherType = 'none';
-        let isPlaying = false;
+<div class="section-title member">
+MEMBER
+</div>
 
-        function attemptLogin() {
-            const u = document.getElementById('loginUser').value;
-            const p = document.getElementById('loginPass').value;
-            
-            // อัปเดตรหัสผ่านแอดมินตามที่กำหนดที่นี่
-            if(u === 'admin' && p === '1975style') {
-                closeModal('loginModal'); 
-                document.getElementById('adminPanel').style.display = 'block';
-                document.body.style.overflow = 'hidden';
-                loadConfigToInputs();
-            } else showNotify("ACCESS DENIED: WRONG CREDENTIALS");
-        }
+<div class="member-grid">
 
-        function showNotify(msg) {
-            const container = document.getElementById('notification-container');
-            const el = document.createElement('div');
-            el.className = 'notify';
-            el.innerHTML = `<i class="fa-solid fa-bell" style="color:var(--accent)"></i> ${msg}`;
-            container.appendChild(el);
-            setTimeout(() => el.remove(), 3000);
-        }
+<div class="card member-card">
+<div class="left">
+<div class="avatar">J</div>
+<div class="info">
+<h3>Jett</h3>
+<div class="role">MEMBER</div>
+</div>
+</div>
+<a class="fb-btn" href="https://facebook.com" target="_blank">f</a>
+</div>
 
-        function loadConfigToInputs() {
-            db.ref('config').once('value', snap => {
-                const d = snap.val() || {};
-                document.getElementById('configSiteName').value = d.name || '';
-                document.getElementById('configFavicon').value = d.favicon || '';
-                document.getElementById('configThemeColor').value = d.themeColor || '#ffc107';
-                document.getElementById('configLogoUrl').value = d.logo || '';
-                document.getElementById('configBgUrl').value = d.bgUrl || '';
-                document.getElementById('configWeather').value = d.weather || 'none';
-                document.getElementById('configFooterText').value = d.footerText || '';
-                document.getElementById('configFooterLink').value = d.footerLink || '';
-            });
-            db.ref('music').once('value', snap => {
-                const m = snap.val() || {};
-                document.getElementById('musicVidId').value = m.id || '';
-                document.getElementById('musicStart').value = m.start || 0;
-                document.getElementById('musicAutoToggle').checked = m.auto || false;
-            });
-        }
+<div class="card member-card">
+<div class="left">
+<div class="avatar">K</div>
+<div class="info">
+<h3>Kenzo</h3>
+<div class="role">MEMBER</div>
+</div>
+</div>
+<a class="fb-btn" href="https://facebook.com" target="_blank">f</a>
+</div>
 
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function closeAdminPanel() { 
-            document.getElementById('adminPanel').style.display = 'none'; 
-            document.body.style.overflow = 'auto'; 
-        }
+<div class="card member-card">
+<div class="left">
+<div class="avatar">S</div>
+<div class="info">
+<h3>Shadow</h3>
+<div class="role">MEMBER</div>
+</div>
+</div>
+<a class="fb-btn" href="https://facebook.com" target="_blank">f</a>
+</div>
 
-        db.ref('roleGroups').on('value', snap => {
-            currentGroups = snap.val() || {};
-            let list = '', opt = '<option value="">SELECT GROUP</option>';
-            Object.keys(currentGroups).forEach(id => {
-                list += `<div class="admin-item-row"><span>${currentGroups[id].name}</span><i class="fa-solid fa-trash-can delete-btn" onclick="db.ref('roleGroups').child('${id}').remove()"></i></div>`;
-                opt += `<option value="${id}">${currentGroups[id].name}</option>`;
-            });
-            document.getElementById('groupListContainer').innerHTML = list;
-            document.getElementById('roleGroupSelect').innerHTML = opt;
-            filterMembers();
-        });
+<div class="card member-card">
+<div class="left">
+<div class="avatar">R</div>
+<div class="info">
+<h3>Rex</h3>
+<div class="role">MEMBER</div>
+</div>
+</div>
+<a class="fb-btn" href="https://facebook.com" target="_blank">f</a>
+</div>
 
-        db.ref('roles').on('value', snap => {
-            currentRoles = snap.val() || {};
-            let opt = '<option value="">SELECT ROLE</option>', list = '';
-            Object.keys(currentRoles).forEach(id => {
-                const gName = currentGroups[currentRoles[id].groupId]?.name || 'UNKNOWN';
-                opt += `<option value="${id}">${currentRoles[id].name}</option>`;
-                list += `<div class="admin-item-row"><div><b style="color:${currentRoles[id].color}">${currentRoles[id].name}</b><br><small style="color:#525866">${gName}</small></div><i class="fa-solid fa-trash-can delete-btn" onclick="db.ref('roles').child('${id}').remove()"></i></div>`;
-            });
-            document.getElementById('memRole').innerHTML = opt;
-            document.getElementById('roleListContainer').innerHTML = list;
-            renderTabs(); filterMembers();
-        });
+</div>
 
-        db.ref('members').on('value', snap => {
-            currentMembers = snap.val() || {};
-            document.getElementById('countNum').innerText = Object.keys(currentMembers).length;
-            let adminList = '';
-            Object.keys(currentMembers).forEach(id => {
-                adminList += `<div class="admin-item-row"><span>${currentMembers[id].name}</span><div><i class="fa-solid fa-pen-to-square" style="color:var(--accent); cursor:pointer; margin-right:15px;" onclick="editMember('${id}')"></i><i class="fa-solid fa-trash-can delete-btn" onclick="db.ref('members').child('${id}').remove()"></i></div></div>`;
-            });
-            document.getElementById('adminMemberList').innerHTML = adminList;
-            filterMembers();
-        });
+</div>
 
-        function addGroup() {
-            const name = document.getElementById('newGroupName').value.toUpperCase();
-            if(name) db.ref('roleGroups').push({ name }).then(() => {
-                document.getElementById('newGroupName').value = ''; showNotify("GROUP ADDED");
-            });
-        }
+<div class="no-result" id="noResult">
+No members found
+</div>
 
-        function addRole() {
-            const name = document.getElementById('newRoleName').value.toUpperCase();
-            const gId = document.getElementById('roleGroupSelect').value;
-            const color = document.getElementById('newRoleColor').value;
-            if(name && gId) db.ref('roles').push({ name, groupId: gId, color }).then(() => {
-                document.getElementById('newRoleName').value = ''; showNotify("ROLE CREATED");
-            });
-        }
+<div class="footer">
+BASTIEN COMMUNITY © 2026
+</div>
 
-        function saveMember() {
-            const id = document.getElementById('editMemId').value;
-            const data = {
-                name: document.getElementById('memName').value,
-                img: document.getElementById('memImg').value,
-                roleId: document.getElementById('memRole').value,
-                fb: document.getElementById('memFb').value || "",
-                yt: document.getElementById('memYt').value || "",
-                tk: document.getElementById('memTk').value || ""
-            };
+</div>
 
-            if(!data.name || !data.roleId) return showNotify("ERROR: NAME & ROLE REQUIRED");
-            if(!data.fb) return showNotify("ERROR: FACEBOOK LINK IS REQUIRED TO ADD MEMBER");
+<script>
 
-            const ref = id ? db.ref('members').child(id) : db.ref('members').push();
-            ref.set(data).then(() => { 
-                showNotify("PERSONNEL DATABASE UPDATED"); 
-                clearMemForm(); 
-            });
-        }
+// นับสมาชิกทั้งหมด
 
-        function editMember(id) {
-            const m = currentMembers[id];
-            document.getElementById('editMemId').value = id;
-            document.getElementById('memName').value = m.name;
-            document.getElementById('memImg').value = m.img;
-            document.getElementById('memRole').value = m.roleId;
-            document.getElementById('memFb').value = m.fb;
-            document.getElementById('memYt').value = m.yt;
-            document.getElementById('memTk').value = m.tk;
-            document.getElementById('memBtn').innerText = "UPDATE PERSONNEL INFO";
-            document.getElementById('memBtn').style.background = "var(--success)";
-        }
+const cards = document.querySelectorAll('.member-card');
+document.getElementById('totalMembers').textContent = cards.length;
 
-        function clearMemForm() {
-            document.getElementById('editMemId').value = '';
-            document.getElementById('memName').value = '';
-            document.getElementById('memImg').value = '';
-            document.getElementById('memFb').value = '';
-            document.getElementById('memYt').value = '';
-            document.getElementById('memTk').value = '';
-            document.getElementById('memBtn').innerText = "DEPLOY TO DIRECTORY";
-            document.getElementById('memBtn').style.background = "var(--accent)";
-        }
+// ค้นหาสมาชิก
 
-        function filterMembers() {
-            const term = document.getElementById('memberSearch').value.toLowerCase();
-            const wrapper = document.getElementById('memberSections');
-            wrapper.innerHTML = '';
-            const structure = {};
-            Object.keys(currentMembers).forEach(id => {
-                const m = currentMembers[id];
-                const role = currentRoles[m.roleId];
-                if(!role) return;
-                const gId = role.groupId;
-                const gName = currentGroups[gId]?.name || "MEMBER GHETT 2K26";
-                if(m.name.toLowerCase().includes(term) && (activeTab === 'all' || m.roleId === activeTab)) {
-                    if(!structure[gId]) structure[gId] = { name: gName, items: [] };
-                    structure[gId].items.push({...m, role});
-                }
-            });
-            Object.keys(structure).forEach(gId => {
-                const group = structure[gId];
-                let html = `<section class="category-section"><div class="category-header">${group.name}</div><div class="member-grid">`;
-                group.items.forEach((m, i) => {
-                    html += `
-                        <div class="member-card" style="animation-delay:${i*0.05}s">
-                            <img src="${m.img || 'https://via.placeholder.com/70'}" class="avatar">
-                            <div>
-                                <div style="font-weight:600; font-size:15px; letter-spacing:0.5px;">${m.name}</div>
-                                <span class="rank-tag" style="background:${m.role.color}">${m.role.name}</span>
-                            </div>
-                            <div class="social-links">
-                                ${m.fb ? `<a href="${m.fb}" target="_blank" style="color:#1877f2;"><i class="fa-brands fa-facebook"></i></a>` : ''}
-                                ${m.yt ? `<a href="${m.yt}" target="_blank" style="color:#ff0000;"><i class="fa-brands fa-youtube"></i></a>` : ''}
-                                ${m.tk ? `<a href="${m.tk}" target="_blank" style="color:#fff;"><i class="fa-brands fa-tiktok"></i></a>` : ''}
-                            </div>
-                        </div>`;
-                });
-                html += `</div></section>`;
-                wrapper.innerHTML += html;
-            });
-            if(!Object.keys(structure).length) wrapper.innerHTML = '<p style="text-align:center; opacity:0.3; padding:100px; font-family:\'Orbitron\'; font-size:12px; letter-spacing:2px;">NO RECORDS FOUND</p>';
-        }
+const searchInput = document.getElementById('searchInput');
 
-        function renderTabs() {
-            const container = document.getElementById('categoryTabs');
-            let html = `<button class="config-btn" style="background:${activeTab==='all'?'var(--accent)':'#16181d'}; color:${activeTab==='all'?'#000':'#8a8f9d'}; border:1px solid ${activeTab==='all'?'transparent':'rgba(255,255,255,0.03)'}" onclick="setActiveTab('all')">ALL</button>`;
-            Object.keys(currentRoles).forEach(id => {
-                const active = activeTab === id;
-                html += `<button class="config-btn" style="background:${active?'var(--accent)':'#16181d'}; color:${active?'#000':'#8a8f9d'}; border:1px solid ${active?'transparent':'rgba(255,255,255,0.03)'}" onclick="setActiveTab('${id}')">${currentRoles[id].name}</button>`;
-            });
-            container.innerHTML = html;
-        }
+searchInput.addEventListener('keyup', function(){
 
-        function setActiveTab(id) { activeTab = id; renderTabs(); filterMembers(); }
+let value = this.value.toLowerCase();
+let found = false;
 
-        function toggleMusic() {
-            if(!player) return;
-            const icon = document.getElementById('musicIcon');
-            if(isPlaying) {
-                player.pauseVideo();
-                icon.className = 'fa-solid fa-play';
-                isPlaying = false;
-            } else {
-                player.playVideo();
-                icon.className = 'fa-solid fa-pause';
-                isPlaying = true;
-            }
-        }
+cards.forEach(card=>{
 
-        function onYouTubeIframeAPIReady() {
-            db.ref('music').once('value', snap => {
-                const m = snap.val() || {};
-                if(!m.id) return;
-                player = new YT.Player('player', {
-                    height: '0', width: '0', videoId: m.id,
-                    playerVars: { 'autoplay': m.auto ? 1 : 0, 'start': m.start || 0, 'loop': 1, 'playlist': m.id },
-                    events: { 
-                        'onReady': (e) => { 
-                            if(m.auto) { e.target.playVideo(); isPlaying = true; document.getElementById('musicIcon').className = 'fa-solid fa-pause'; }
-                        },
-                        'onStateChange': (e) => {
-                            if(e.data === YT.PlayerState.PLAYING) { isPlaying = true; document.getElementById('musicIcon').className = 'fa-solid fa-pause'; }
-                            else { isPlaying = false; document.getElementById('musicIcon').className = 'fa-solid fa-play'; }
-                        }
-                    }
-                });
-            });
-        }
+let name = card.querySelector('h3').textContent.toLowerCase();
 
-        db.ref('config').on('value', snap => {
-            const d = snap.val() || {};
-            document.title = d.name || 'GHETTOTROPHY';
-            document.getElementById('siteNameDisplay').innerText = d.name || 'GHETTOTROPHY';
-            document.getElementById('favicon').href = d.favicon || '';
-            document.getElementById('siteLogo').src = d.logo || '';
-            if(d.bgUrl) document.body.style.backgroundImage = `url('${d.bgUrl}')`;
-            if(d.themeColor) document.documentElement.style.setProperty('--accent', d.themeColor);
-            weatherType = d.weather || 'none';
-            document.getElementById('footerTextDisplay').innerText = d.footerText || 'ORIGINAL BY BASTIEN 1975';
-            document.getElementById('footerLinkLabel').href = d.footerLink || '#';
-        });
+if(name.includes(value)){
+card.style.display='flex';
+found=true;
+}else{
+card.style.display='none';
+}
 
-        function saveConfig() {
-            db.ref('config').update({
-                name: document.getElementById('configSiteName').value,
-                favicon: document.getElementById('configFavicon').value,
-                themeColor: document.getElementById('configThemeColor').value,
-                logo: document.getElementById('configLogoUrl').value,
-                bgUrl: document.getElementById('configBgUrl').value,
-                weather: document.getElementById('configWeather').value,
-                footerText: document.getElementById('configFooterText').value,
-                footerLink: document.getElementById('configFooterLink').value
-            }).then(() => showNotify("CONFIGURATION SYNCHRONIZED"));
-        }
+});
 
-        function saveMusic() {
-            db.ref('music').set({
-                id: document.getElementById('musicVidId').value,
-                start: document.getElementById('musicStart').value,
-                auto: document.getElementById('musicAutoToggle').checked
-            }).then(() => showNotify("AUDIO ENGINE UPDATED"));
-        }
-    </script>
+document.getElementById('noResult').style.display =
+found ? 'none' : 'block';
+
+});
+
+</script>
+
 </body>
 </html>
