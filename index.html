@@ -11,28 +11,36 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root { --primary: #f3d48b; --bg-dark: #0a0a0b; --card-bg: rgba(20, 20, 25, 0.7); --border-color: rgba(255, 255, 255, 0.1); --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        body { background-color: var(--bg-dark); color: #fff; font-family: 'Rajdhani', 'Kanit', sans-serif; margin: 0; min-height: 100vh; }
+        :root { --primary: #f3d48b; --bg-dark: #0a0a0b; --card-bg: rgba(20, 20, 25, 0.7); --border-color: rgba(255, 255, 255, 0.1); --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--bg-dark); color: #fff; font-family: 'Rajdhani', 'Kanit', sans-serif; margin: 0; min-height: 100vh; transition: var(--transition); }
         nav { display: flex; justify-content: space-between; padding: 15px 5%; background: rgba(0,0,0,0.85); align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-color); }
+        
+        .brand-area { display: flex; align-items: center; gap: 15px; }
         #brand-name { font-weight: 900; letter-spacing: 3px; font-family: 'Orbitron'; font-size: 1.4rem; color: var(--primary); }
+        #searchInput { background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 20px; color: #fff; outline: none; width: 150px; transition: var(--transition); }
+        #searchInput:focus { width: 200px; border-color: var(--primary); }
+
         .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
-        .glass-panel { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 15px; padding: 25px; margin-bottom: 30px; }
-        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        input, select { background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); padding: 12px; color: #fff; border-radius: 8px; width: 100%; }
-        .btn-action { background: var(--primary); color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-        .section-title { font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 900; letter-spacing: 5px; margin: 30px 0 20px; display: flex; align-items: center; gap: 15px; }
-        .section-title::after { content: ""; height: 1px; flex-grow: 1; background: linear-gradient(90deg, var(--primary), transparent); }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .member-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; display: flex; align-items: center; gap: 15px; border-radius: 12px; }
+        .glass-panel { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 15px; padding: 25px; margin-bottom: 30px; transition: var(--transition); }
+        .btn-action { background: var(--primary); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: var(--transition); }
+        .btn-action:hover { transform: translateY(-2px); filter: brightness(1.2); }
+        
+        .member-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; display: flex; align-items: center; gap: 15px; border-radius: 12px; transition: var(--transition); animation: fadeIn 0.5s ease; }
+        .member-card:hover { transform: scale(1.02); border-color: var(--primary); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
         .avatar-box { width: 65px; height: 65px; background-size: cover; background-position: center; border-radius: 50%; border: 2px solid var(--primary); }
         .role-tag { font-family: 'Orbitron'; font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; background: var(--primary); color: #000; }
         .hidden { display: none !important; }
-        .toast { position: fixed; top: 20px; right: 20px; background: var(--primary); color: #000; padding: 15px 25px; border-radius: 10px; z-index: 10000; }
     </style>
 </head>
 <body>
     <nav>
-        <div id="brand-name">ONELESS CGT</div>
+        <div class="brand-area">
+            <div id="brand-name">ORIGINAL BASTIEN</div>
+            <input type="text" id="searchInput" placeholder="ค้นหาสมาชิก..." onkeyup="filterMembers()">
+        </div>
         <div>
             <button onclick="showView('memberView')" class="btn-action" style="background: rgba(255,255,255,0.1); color: #fff;"><i class="fas fa-home"></i> HOME</button>
             <button onclick="checkAdminStatus()" id="navAdmin" class="btn-action"><i class="fas fa-user-shield"></i> ADMIN</button>
@@ -52,25 +60,24 @@
         <section id="memberView">
             <div id="adminPanel" class="hidden glass-panel">
                 <h3>จัดการสมาชิก</h3>
-                <div class="admin-grid" style="margin-bottom: 15px;">
-                    <input type="hidden" id="editMemberId">
-                    <input type="text" id="newName" placeholder="ชื่อ-นามสกุล">
-                    <input type="text" id="newImg" placeholder="URL รูป (ถ้าเว้นไว้จะใช้รูป default)">
-                    <input type="text" id="newFB" placeholder="ลิงก์ Facebook">
-                    <select id="newRole"><option value="leader">Leader</option><option value="member">Member</option></select>
-                </div>
+                <input type="hidden" id="editMemberId">
+                <input type="text" id="newName" placeholder="ชื่อ-นามสกุล" style="margin-bottom: 10px;">
+                <input type="text" id="newImg" placeholder="URL รูป" style="margin-bottom: 10px;">
+                <input type="text" id="newFB" placeholder="ลิงก์ Facebook" style="margin-bottom: 10px;">
+                <select id="newRole" style="margin-bottom: 15px;"><option value="leader">Leader</option><option value="member">Member</option></select>
                 <button onclick="saveMember()" class="btn-action">บันทึกสมาชิก</button>
             </div>
 
-            <div style="margin-bottom: 20px; text-align: right; font-weight: bold;">
-                TOTAL MEMBERS: <span id="totalMembers">0</span>
+            <div style="margin-bottom: 20px; text-align: right; font-weight: bold; display: flex; align-items: center; justify-content: flex-end; gap: 10px;">
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path></svg>
+                <span>:</span> <span id="totalMembers">0</span>
             </div>
 
             <div id="rosterDisplay">
-                <div class="section-title" id="titleLeader">LEADERS</div>
-                <div class="grid" id="leaderGrid"></div>
-                <div class="section-title" id="titleMember">MEMBERS</div>
-                <div class="grid" id="memberGrid"></div>
+                <div class="section-title">LEADERS</div>
+                <div class="grid" id="leaderGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;"></div>
+                <div class="section-title">MEMBERS</div>
+                <div class="grid" id="memberGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;"></div>
             </div>
         </section>
     </div>
@@ -81,21 +88,29 @@
         const db = firebase.database();
         const DEFAULT_IMG = "https://img2.pic.in.th/10809a679b865d80c09.png";
         let isAdmin = false;
+        let memberDataList = [];
 
-        function showToast(m) { alert(m); }
         function showView(v) {
             document.getElementById('memberView').classList.toggle('hidden', v !== 'memberView');
             document.getElementById('adminLoginView').classList.toggle('hidden', v !== 'adminLoginView');
         }
 
+        function filterMembers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.member-card');
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                card.style.display = name.includes(query) ? '' : 'none';
+            });
+        }
+
         function handleLogin() {
-            const u = document.getElementById('adminUser').value;
-            const p = document.getElementById('adminPass').value;
-            if(u === "originalbastien" && p === "1975stylestan") {
+            if(document.getElementById('adminUser').value === "originalbastien" && document.getElementById('adminPass').value === "1975stylestan") {
                 isAdmin = true;
                 document.getElementById('adminPanel').classList.remove('hidden');
                 document.getElementById('navAdmin').innerText = "LOGOUT";
                 showView('memberView');
+                renderRoster();
             } else { alert("รหัสผิด"); }
         }
 
@@ -105,20 +120,22 @@
             db.ref('roster').on('value', snap => {
                 const data = snap.val() || {};
                 const grids = { leader: 'leaderGrid', member: 'memberGrid' };
-                let count = 0;
-                Object.values(grids).forEach(id => document.getElementById(id).innerHTML = "");
+                document.getElementById('leaderGrid').innerHTML = "";
+                document.getElementById('memberGrid').innerHTML = "";
                 
+                let count = 0;
                 Object.keys(data).forEach(id => {
                     count++;
                     const item = data[id];
                     const card = document.createElement('div');
                     card.className = 'member-card';
+                    card.setAttribute('data-name', item.name);
                     card.innerHTML = `
                         <div class="avatar-box" style="background-image: url('${item.img || DEFAULT_IMG}')"></div>
                         <div style="flex:1">
                             <span class="role-tag">${item.role.toUpperCase()}</span>
                             <div style="font-weight:700;">${item.name}</div>
-                            <a href="${item.fb}" target="_blank" style="color:var(--primary);">FACEBOOK</a>
+                            <a href="${item.fb}" target="_blank" style="color:var(--primary); text-decoration:none;">FACEBOOK</a>
                         </div>
                         ${isAdmin ? `<button onclick="deleteMember('${id}')" style="background:none; border:none; color:red; cursor:pointer;"><i class="fas fa-trash"></i></button>` : ''}
                     `;
@@ -129,19 +146,17 @@
         }
 
         function saveMember() {
-            const id = document.getElementById('editMemberId').value;
             const data = {
                 name: document.getElementById('newName').value,
                 img: document.getElementById('newImg').value || DEFAULT_IMG,
                 fb: document.getElementById('newFB').value,
                 role: document.getElementById('newRole').value
             };
-            if(!data.name) return alert("ใส่ชื่อด้วย");
-            if(id) db.ref('roster/' + id).update(data); else db.ref('roster').push(data);
+            db.ref('roster').push(data);
             alert("บันทึกสำเร็จ");
         }
 
-        function deleteMember(id) { if(confirm("ลบ?")) db.ref('roster/' + id).remove(); }
+        function deleteMember(id) { if(confirm("ลบสมาชิกนี้?")) db.ref('roster/' + id).remove(); }
         renderRoster();
     </script>
 </body>
