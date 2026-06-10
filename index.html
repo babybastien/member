@@ -4,97 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BASTIEN</title>
-    
     <link rel="icon" type="image/png" href="https://img1.pic.in.th/images/cgtlogo2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&family=Kanit:wght@200;400;600&display=swap" rel="stylesheet">
-    
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
     <style>
-        :root {
-            --primary: #f3d48b;
-            --bg-dark: #0a0a0b;
-            --card-bg: rgba(20, 20, 25, 0.7);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --danger: #ff4757;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * { box-sizing: border-box; scroll-behavior: smooth; }
-
-        body {
-            background-color: var(--bg-dark);
-            background-attachment: fixed;
-            background-position: center;
-            background-size: cover;
-            color: #fff;
-            font-family: 'Rajdhani', 'Kanit', sans-serif;
-            margin: 0; min-height: 100vh;
-            overflow-x: hidden;
-            transition: background 0.5s ease;
-        }
-
-        nav { 
-            display: flex; justify-content: space-between; padding: 15px 5%; 
-            background: rgba(0,0,0,0.85); align-items: center; position: sticky; 
-            top: 0; z-index: 100; backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-color);
-        }
+        :root { --primary: #f3d48b; --bg-dark: #0a0a0b; --card-bg: rgba(20, 20, 25, 0.7); --border-color: rgba(255, 255, 255, 0.1); --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { background-color: var(--bg-dark); color: #fff; font-family: 'Rajdhani', 'Kanit', sans-serif; margin: 0; min-height: 100vh; }
+        nav { display: flex; justify-content: space-between; padding: 15px 5%; background: rgba(0,0,0,0.85); align-items: center; position: sticky; top: 0; z-index: 100; backdrop-filter: blur(15px); border-bottom: 1px solid var(--border-color); }
         #brand-name { font-weight: 900; letter-spacing: 3px; font-family: 'Orbitron'; font-size: 1.4rem; color: var(--primary); }
-
         .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
-
-        .glass-panel {
-            background: var(--card-bg); backdrop-filter: blur(10px);
-            border: 1px solid var(--border-color); border-radius: 15px;
-            padding: 25px; margin-bottom: 30px;
-        }
-
-        input { 
-            background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); padding: 12px; 
-            color: #fff; border-radius: 8px; font-family: 'Kanit'; outline: none; width: 100%; margin-bottom: 10px;
-        }
-
-        .btn-action { 
-            background: var(--primary); color: #000; border: none; padding: 12px 25px; 
-            border-radius: 8px; font-weight: 700; font-family: 'Orbitron'; cursor: pointer; 
-            transition: var(--transition); width: 100%;
-        }
-
-        .hidden { display: none !important; }
+        .glass-panel { background: var(--card-bg); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 15px; padding: 25px; margin-bottom: 30px; }
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        input, select { background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); padding: 12px; color: #fff; border-radius: 8px; width: 100%; }
+        .btn-action { background: var(--primary); color: #000; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .section-title { font-family: 'Orbitron'; font-size: 1.1rem; font-weight: 900; letter-spacing: 5px; margin: 30px 0 20px; display: flex; align-items: center; gap: 15px; }
+        .section-title::after { content: ""; height: 1px; flex-grow: 1; background: linear-gradient(90deg, var(--primary), transparent); }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
         .member-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 15px; display: flex; align-items: center; gap: 15px; border-radius: 12px; }
-        .avatar-box { width: 65px; height: 65px; background-size: cover; background-position: center; border-radius: 50%; border: 2px solid var(--primary); flex-shrink: 0; }
+        .avatar-box { width: 65px; height: 65px; background-size: cover; background-position: center; border-radius: 50%; border: 2px solid var(--primary); }
         .role-tag { font-family: 'Orbitron'; font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; background: var(--primary); color: #000; }
+        .hidden { display: none !important; }
+        .toast { position: fixed; top: 20px; right: 20px; background: var(--primary); color: #000; padding: 15px 25px; border-radius: 10px; z-index: 10000; }
     </style>
 </head>
 <body>
-
     <nav>
         <div id="brand-name">ONELESS CGT</div>
         <div>
-            <button onclick="showView('memberView')" class="btn-action" style="width: auto;">HOME</button>
-            <button onclick="showView('adminLoginView')" class="btn-action" style="width: auto;">ADMIN</button>
+            <button onclick="showView('memberView')" class="btn-action" style="background: rgba(255,255,255,0.1); color: #fff;"><i class="fas fa-home"></i> HOME</button>
+            <button onclick="checkAdminStatus()" id="navAdmin" class="btn-action"><i class="fas fa-user-shield"></i> ADMIN</button>
         </div>
     </nav>
 
     <div class="container">
         <section id="adminLoginView" class="hidden">
             <div style="max-width: 400px; margin: auto;" class="glass-panel">
-                <h2 style="text-align:center">ADMIN LOGIN</h2>
-                <input type="text" id="username" placeholder="Username">
-                <input type="password" id="password" placeholder="Password">
-                <button onclick="handleLogin()" class="btn-action">เข้าสู่ระบบ</button>
+                <h2>ADMIN LOGIN</h2>
+                <input type="text" id="adminUser" placeholder="Username" style="margin-bottom: 10px;">
+                <input type="password" id="adminPass" placeholder="Password" style="margin-bottom: 15px;">
+                <button onclick="handleLogin()" class="btn-action" style="width: 100%;">LOGIN</button>
             </div>
         </section>
 
         <section id="memberView">
             <div id="adminPanel" class="hidden glass-panel">
-                <h3>ระบบจัดการ (Admin Mode)</h3>
-                <button onclick="location.reload()" class="btn-action" style="background:#ff4757; color:#fff; width:auto;">LOGOUT</button>
+                <h3>จัดการสมาชิก</h3>
+                <div class="admin-grid" style="margin-bottom: 15px;">
+                    <input type="hidden" id="editMemberId">
+                    <input type="text" id="newName" placeholder="ชื่อ-นามสกุล">
+                    <input type="text" id="newImg" placeholder="URL รูป (ถ้าเว้นไว้จะใช้รูป default)">
+                    <input type="text" id="newFB" placeholder="ลิงก์ Facebook">
+                    <select id="newRole"><option value="leader">Leader</option><option value="member">Member</option></select>
+                </div>
+                <button onclick="saveMember()" class="btn-action">บันทึกสมาชิก</button>
             </div>
-            <div class="grid" id="memberGrid"></div>
+
+            <div style="margin-bottom: 20px; text-align: right; font-weight: bold;">
+                TOTAL MEMBERS: <span id="totalMembers">0</span>
+            </div>
+
+            <div id="rosterDisplay">
+                <div class="section-title" id="titleLeader">LEADERS</div>
+                <div class="grid" id="leaderGrid"></div>
+                <div class="section-title" id="titleMember">MEMBERS</div>
+                <div class="grid" id="memberGrid"></div>
+            </div>
         </section>
     </div>
 
@@ -102,50 +79,69 @@
         const firebaseConfig = { databaseURL: "https://bastienstyle-3d598-default-rtdb.asia-southeast1.firebasedatabase.app/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const DEFAULT_IMG = "https://img2.pic.in.th/10809a679b865d80c09.png";
+        let isAdmin = false;
 
-        // ข้อมูลล็อกอินที่กำหนด
-        const ADMIN_USER = "originalbastien";
-        const ADMIN_PASS = "1975stylestan";
-
+        function showToast(m) { alert(m); }
         function showView(v) {
             document.getElementById('memberView').classList.toggle('hidden', v !== 'memberView');
             document.getElementById('adminLoginView').classList.toggle('hidden', v !== 'adminLoginView');
         }
 
         function handleLogin() {
-            const u = document.getElementById('username').value;
-            const p = document.getElementById('password').value;
-
-            if(u === ADMIN_USER && p === ADMIN_PASS) {
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+            if(u === "originalbastien" && p === "1975stylestan") {
+                isAdmin = true;
                 document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('navAdmin').innerText = "LOGOUT";
                 showView('memberView');
-                alert("ยินดีต้อนรับท่านแอดมิน");
-            } else {
-                alert("Username หรือ Password ไม่ถูกต้อง");
-            }
+            } else { alert("รหัสผิด"); }
         }
+
+        function checkAdminStatus() { if(isAdmin) location.reload(); else showView('adminLoginView'); }
 
         function renderRoster() {
             db.ref('roster').on('value', snap => {
-                const grid = document.getElementById('memberGrid');
-                grid.innerHTML = "";
                 const data = snap.val() || {};
+                const grids = { leader: 'leaderGrid', member: 'memberGrid' };
+                let count = 0;
+                Object.values(grids).forEach(id => document.getElementById(id).innerHTML = "");
+                
                 Object.keys(data).forEach(id => {
+                    count++;
                     const item = data[id];
                     const card = document.createElement('div');
                     card.className = 'member-card';
                     card.innerHTML = `
-                        <div class="avatar-box" style="background-image: url('${item.img || 'https://img2.pic.in.th/10809a679b865d80c09.png'}')"></div>
-                        <div>
+                        <div class="avatar-box" style="background-image: url('${item.img || DEFAULT_IMG}')"></div>
+                        <div style="flex:1">
                             <span class="role-tag">${item.role.toUpperCase()}</span>
                             <div style="font-weight:700;">${item.name}</div>
+                            <a href="${item.fb}" target="_blank" style="color:var(--primary);">FACEBOOK</a>
                         </div>
+                        ${isAdmin ? `<button onclick="deleteMember('${id}')" style="background:none; border:none; color:red; cursor:pointer;"><i class="fas fa-trash"></i></button>` : ''}
                     `;
-                    grid.appendChild(card);
+                    if(grids[item.role]) document.getElementById(grids[item.role]).appendChild(card);
                 });
+                document.getElementById('totalMembers').innerText = count;
             });
         }
 
+        function saveMember() {
+            const id = document.getElementById('editMemberId').value;
+            const data = {
+                name: document.getElementById('newName').value,
+                img: document.getElementById('newImg').value || DEFAULT_IMG,
+                fb: document.getElementById('newFB').value,
+                role: document.getElementById('newRole').value
+            };
+            if(!data.name) return alert("ใส่ชื่อด้วย");
+            if(id) db.ref('roster/' + id).update(data); else db.ref('roster').push(data);
+            alert("บันทึกสำเร็จ");
+        }
+
+        function deleteMember(id) { if(confirm("ลบ?")) db.ref('roster/' + id).remove(); }
         renderRoster();
     </script>
 </body>
