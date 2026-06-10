@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BASTIEN</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; font-family:'Montserrat',sans-serif; }
+
+body{
+    width:100%; height:100vh; overflow:hidden;
+    display:flex; justify-content:center; align-items:center; position:relative;
+    background:url('https://img2.pic.in.th/FiveM_GTAProcess_2026-01-30_00-03-24_617.png');
+    background-size:cover; background-position:center;
+}
+
+body::before{
+    content:''; position:absolute; inset:0;
+    background:rgba(0,0,0,.78); backdrop-filter:blur(2px);
+}
+
+.container{ position:relative; z-index:5; text-align:center; width:100%; }
+
+.title{
+    color:#fff; font-size:7rem; font-weight:900; letter-spacing:15px;
+    text-shadow: 0 0 15px rgba(255,255,255,.4), 0 0 35px rgba(255,255,255,.15);
+    animation:fadeUp 1s ease;
+}
+
+.subtitle{ color:#bdbdbd; letter-spacing:8px; margin-top:12px; font-size:14px; animation:fadeUp 1.2s ease; }
+.line{ width:250px; height:1px; background:rgba(255,255,255,.2); margin:18px auto 35px; }
+
+.logo{
+    width:370px; max-width:80%;
+    filter: drop-shadow(0 0 25px rgba(255,255,255,.35));
+    animation:float 5s ease-in-out infinite;
+}
+
+.cards{ margin-top:40px; display:flex; justify-content:center; gap:30px; flex-wrap:wrap; }
+
+/* ปรับแต่งส่วน Card ให้เป็นปุ่มกดได้ */
+.card{
+    width:260px; height:120px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+    backdrop-filter:blur(15px);
+    border-radius:22px;
+    display:flex; flex-direction:column; justify-content:center; align-items:center;
+    transition:.35s;
+    text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
+    cursor: pointer;       /* เปลี่ยนเมาส์เป็นรูปมือ */
+}
+
+.card:hover{
+    transform:translateY(-6px);
+    background:rgba(255,255,255,.08);
+    box-shadow:0 0 30px rgba(255,255,255,.08);
+}
+
+.card h2{ color:white; font-size:30px; letter-spacing:3px; }
+.card span{ color:#9f9f9f; margin-top:8px; letter-spacing:3px; font-size:12px; }
+
+.socials{ position:absolute; bottom:25px; left:25px; z-index:10; display:flex; gap:12px; }
+.socials a{
+    width:48px; height:48px; background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.08); border-radius:14px;
+    color:white; text-decoration:none;
+    display:flex; justify-content:center; align-items:center; transition:.3s;
+}
+.socials a:hover{ background:white; color:black; }
+
+.credit{ position:absolute; bottom:20px; left:50%; transform:translateX(-50%); z-index:10; color:rgba(255,255,255,.35); font-size:12px; letter-spacing:3px; }
+.stars{ position:absolute; inset:0; z-index:2; }
+.star{ position:absolute; color:white; opacity:.7; animation:sparkle linear infinite; }
+
+@keyframes sparkle{ 0%{ transform:translateY(0px) rotate(0deg); opacity:0; } 50%{ opacity:1; } 100%{ transform:translateY(-120px) rotate(180deg); opacity:0; } }
+@keyframes float{ 0%{ transform:translateY(0); } 50%{ transform:translateY(-12px); } 100%{ transform:translateY(0); } }
+@keyframes fadeUp{ from{ opacity:0; transform:translateY(30px); } to{ opacity:1; transform:translateY(0); } }
+
+@media(max-width:768px){ .title{ font-size:4rem; } .logo{ width:260px; } }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="container">
+    <h1 class="title">BASTIEN</h1>
+    <div class="subtitle">BET FEARLESS IS KING</div>
+    <div class="line"></div>
+    <img class="logo" src="https://img2.pic.in.th/494689434_680826811541356_487741571349200127_ndd7be3f6748aa3d5.png" alt="logo">
+
+    <div class="cards">
+        <a href="ใส่ลิงก์ของคุณที่นี่" class="card" target="_blank">
+            <h2>BASTIEN</h2>
+            <span>MEMBER</span>
+        </a>
+
+        <a href="ใส่ลิงก์ของคุณที่นี่" class="card" target="_blank">
+            <h2>EVELYN</h2>
+            <span>MEMBER</span>
+        </a>
+    </div>
+</div>
+
+<div class="socials">
+    <a href="https://www.youtube.com/@bastienboys" target="_blank"><i class="fab fa-youtube"></i></a>
+    <a href="https://discord.gg/krywZwMTVP" target="_blank"><i class="fab fa-discord"></i></a>
+</div>
+
+<div class="credit">ORIGINAL BY BASTIEN & EVELYN © 2026</div>
+
+<script>
+const stars = document.getElementById("stars");
+for(let i=0;i<80;i++){
+    const star = document.createElement("div");
+    star.classList.add("star");
+    star.innerHTML = Math.random() > 0.5 ? "✦" : "✧";
+    star.style.left = Math.random()*100+"%";
+    star.style.top = Math.random()*100+"%";
+    star.style.fontSize = (Math.random()*18+8)+"px";
+    star.style.animationDuration = (Math.random()*6+4)+"s";
+    star.style.animationDelay = Math.random()*5+"s";
+    stars.appendChild(star);
+}
+document.addEventListener("mousemove",(e)=>{
+    const x = (window.innerWidth/2 - e.pageX)/80;
+    const y = (window.innerHeight/2 - e.pageY)/80;
+    document.body.style.backgroundPosition = `${50+x}% ${50+y}%`;
+});
+</script>
+</body>
+</html>
