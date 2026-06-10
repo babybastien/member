@@ -132,12 +132,6 @@
 
         .hidden { display: none !important; }
 
-        .key-display {
-            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 5px;
-            margin-top: 15px; font-family: monospace; color: var(--primary);
-            border: 1px dashed var(--primary); word-break: break-all;
-        }
-
         .fade-in { animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -157,16 +151,11 @@
     <div class="container">
         <section id="adminLoginView" class="hidden fade-in" style="padding-top: 5vh;">
             <div style="max-width: 400px; margin: auto; text-align: center;" class="glass-panel">
-                <i class="fas fa-key" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
-                <h2>ACCESS KEY</h2>
-                <input type="text" id="accessKeyInput" placeholder="ใส่ KEY เพื่อเข้าสู่ระบบ" style="margin-bottom: 20px; text-align: center;">
-                <button onclick="handleLoginByKey()" class="btn-action" style="margin-bottom: 25px;">เข้าสู่ระบบ</button>
-                
-                <hr style="opacity: 0.1; margin-bottom: 20px;">
-                <p style="font-size: 0.8rem; opacity: 0.6;">สร้าง KEY ใหม่ (ต้องใช้รหัสยืนยัน)</p>
-                <input type="password" id="genPass" placeholder="รหัสยืนยันแอดมิน" style="margin-bottom: 10px; text-align: center;">
-                <button onclick="generateNewKey()" class="btn-action btn-secondary" style="width: 100%; font-size: 0.8rem;">สร้าง ACCESS KEY</button>
-                <div id="newKeyResult" class="hidden key-display"></div>
+                <i class="fas fa-lock" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
+                <h2>ADMIN LOGIN</h2>
+                <input type="text" id="adminUser" placeholder="Username" style="margin-bottom: 10px; text-align: center;">
+                <input type="password" id="adminPass" placeholder="Password" style="margin-bottom: 20px; text-align: center;">
+                <button onclick="handleAdminLogin()" class="btn-action">เข้าสู่ระบบ</button>
             </div>
         </section>
 
@@ -182,15 +171,11 @@
                         </div>
                         <div>
                             <label>รูปพื้นหลัง (URL)</label>
-                            <input type="text" id="configBG" placeholder="https://..." onchange="updateSetting('bg', this.value)">
+                            <input type="text" id="configBG" placeholder="ใส่ลิงก์รูปภาพ https://..." onchange="updateSetting('bg', this.value)">
                         </div>
                         <div>
                             <label>หัวข้อ Founder</label>
-                            <input type="text" id="configHeadFounder" placeholder="FOUNDERS" oninput="updateSetting('headFounder', this.value)">
-                        </div>
-                        <div>
-                            <label>หัวข้อ Leader</label>
-                            <input type="text" id="configHeadLeader" placeholder="LEADERS" oninput="updateSetting('headLeader', this.value)">
+                            <input type="text" id="configHeadFounder" placeholder="LEADER" oninput="updateSetting('headFounder', this.value)">
                         </div>
                     </div>
 
@@ -199,11 +184,10 @@
                         <div class="admin-grid" style="margin-bottom: 15px;">
                             <input type="hidden" id="editMemberId">
                             <input type="text" id="newName" placeholder="ชื่อ-นามสกุล">
-                            <input type="text" id="newImg" placeholder="URL รูปโปรไฟล์">
+                            <input type="text" id="newImg" placeholder="URL รูปโปรไฟล์ (เว้นว่างไว้เพื่อใช้รูปเริ่มต้น)">
                             <input type="text" id="newFB" placeholder="ลิงก์ Facebook">
                             <select id="newRole">
                                 <option value="founder">Founder</option>
-                                <option value="leader">Leader</option>
                                 <option value="member">Member</option>
                             </select>
                         </div>
@@ -217,12 +201,8 @@
 
             <div id="rosterDisplay">
                 <div id="section-founder">
-                    <div class="section-title" id="titleFounder">FOUNDERS</div>
+                    <div class="section-title" id="titleFounder">LEADER</div>
                     <div class="grid" id="founderGrid"></div>
-                </div>
-                <div id="section-leader">
-                    <div class="section-title" id="titleLeader">LEADERS</div>
-                    <div class="grid" id="leaderGrid"></div>
                 </div>
                 <div id="section-member">
                     <div class="section-title" id="titleMember">MEMBERS</div>
@@ -234,7 +214,6 @@
 
     <script>
         // --- Firebase Configuration ---
-        // แก้ไข databaseURL เป็นลิงก์ใหม่เรียบร้อยแล้ว
         const firebaseConfig = {
             databaseURL: "https://bastienstyle-3d598-default-rtdb.asia-southeast1.firebasedatabase.app/"
         };
@@ -242,6 +221,7 @@
         const db = firebase.database();
 
         let isAdmin = false;
+        const DEFAULT_AVATAR = "https://i.postimg.cc/zvrKL8s8/494689434-680826811541356-487741571349200127-n.png";
 
         // --- Helper Functions ---
         function showToast(m) {
@@ -268,43 +248,26 @@
             document.getElementById('adminLoginView').classList.toggle('hidden', v !== 'adminLoginView');
         }
 
-        // --- KEY SYSTEM ---
-        function generateNewKey() {
-            const pass = document.getElementById('genPass').value;
-            if(pass === "bastien1975xx") { // รหัสผ่านสำหรับสร้าง KEY
-                const newKey = 'CGT-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                db.ref('validKeys/' + newKey).set(true);
-                const res = document.getElementById('newKeyResult');
-                res.innerHTML = `คัดลอก KEY นี้:<br><strong>${newKey}</strong>`;
-                res.classList.remove('hidden');
-                document.getElementById('genPass').value = "";
-                showToast("สร้าง ACCESS KEY สำเร็จ");
+        // --- LOGIN SYSTEM ---
+        function handleAdminLogin() {
+            const user = document.getElementById('adminUser').value.trim();
+            const pass = document.getElementById('adminPass').value.trim();
+
+            if (user === "adminbastien" && pass === "1975") {
+                isAdmin = true;
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.getElementById('navAdmin').innerHTML = '<i class="fas fa-sign-out-alt"></i> LOGOUT';
+                showView('memberView');
+                showToast("เข้าสู่ระบบแอดมินสำเร็จ");
+                renderRoster();
             } else {
                 triggerJumpscare();
             }
         }
 
-        function handleLoginByKey() {
-            const key = document.getElementById('accessKeyInput').value.trim();
-            if(!key) return showToast("กรุณาใส่ KEY");
-
-            db.ref('validKeys/' + key).once('value', snap => {
-                if(snap.exists()) {
-                    isAdmin = true;
-                    document.getElementById('adminPanel').classList.remove('hidden');
-                    document.getElementById('navAdmin').innerHTML = '<i class="fas fa-sign-out-alt"></i> LOGOUT';
-                    showView('memberView');
-                    showToast("เข้าสู่ระบบแอดมินสำเร็จ");
-                    renderRoster(); // Re-render to show edit controls
-                } else {
-                    triggerJumpscare();
-                }
-            });
-        }
-
         function checkAdminStatus() { 
             if(isAdmin) {
-                location.reload(); // Logout simple way
+                location.reload();
             } else {
                 showView('adminLoginView');
             }
@@ -326,16 +289,14 @@
                 document.body.style.backgroundImage = `url('${s.bg}')`;
                 document.getElementById('configBG').value = s.bg;
             }
-            document.getElementById('titleFounder').innerText = s.headFounder || "FOUNDERS";
+            document.getElementById('titleFounder').innerText = s.headFounder || "LEADER";
             document.getElementById('configHeadFounder').value = s.headFounder || "";
-            document.getElementById('titleLeader').innerText = s.headLeader || "LEADERS";
-            document.getElementById('configHeadLeader').value = s.headLeader || "";
         });
 
         // --- ROSTER REALTIME SYNC ---
         function renderRoster() {
             db.ref('roster').on('value', snap => {
-                const grids = { founder: 'founderGrid', leader: 'leaderGrid', member: 'memberGrid' };
+                const grids = { founder: 'founderGrid', member: 'memberGrid' };
                 Object.values(grids).forEach(id => document.getElementById(id).innerHTML = "");
                 
                 const data = snap.val();
@@ -343,10 +304,12 @@
 
                 Object.keys(data).forEach(id => {
                     const item = data[id];
+                    if (item.role === 'leader') return;
+
                     const card = document.createElement('div');
                     card.className = 'member-card fade-in';
                     card.innerHTML = `
-                        <div class="avatar-box" style="background-image: url('${item.img || 'https://img1.pic.in.th/images/cgtlogo2.png'}')"></div>
+                        <div class="avatar-box" style="background-image: url('${item.img || DEFAULT_AVATAR}')"></div>
                         <div style="flex:1">
                             <span class="role-tag">${item.role.toUpperCase()}</span>
                             <div style="font-weight:700; font-family:'Orbitron'; font-size:1.1rem;">${item.name}</div>
@@ -363,16 +326,21 @@
             });
         }
 
-        // Initial render
         renderRoster();
 
         // --- MEMBER CRUD FUNCTIONS ---
         function saveMember() {
             if(!isAdmin) return showToast("สิทธิ์ไม่ถูกต้อง");
             const id = document.getElementById('editMemberId').value;
+            
+            let imgInput = document.getElementById('newImg').value.trim();
+            if (!imgInput) {
+                imgInput = DEFAULT_AVATAR;
+            }
+
             const memberData = {
                 name: document.getElementById('newName').value,
-                img: document.getElementById('newImg').value,
+                img: imgInput,
                 fb: document.getElementById('newFB').value,
                 role: document.getElementById('newRole').value
             };
@@ -394,7 +362,7 @@
         function prepareEdit(id, name, img, fb, role) {
             document.getElementById('editMemberId').value = id;
             document.getElementById('newName').value = name;
-            document.getElementById('newImg').value = img;
+            document.getElementById('newImg').value = img === DEFAULT_AVATAR ? "" : img;
             document.getElementById('newFB').value = fb;
             document.getElementById('newRole').value = role;
             document.getElementById('saveBtn').innerText = "อัปเดตสมาชิก";
